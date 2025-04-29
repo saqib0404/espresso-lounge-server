@@ -47,6 +47,35 @@ async function run() {
             res.send(result)
         })
 
+        // Update One
+        app.put('/:id', async (req, res) => {
+            const coffee = req.body;
+            const id = req.params.id
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+
+            const updateCoffee = {
+                $set: {
+                    name: coffee.name,
+                    chef: coffee.chef,
+                    supplier: coffee.supplier,
+                    price: coffee.price,
+                    category: coffee.category,
+                    details: coffee.details,
+                    photoUrl: coffee.photoUrl
+                },
+            };
+            const result = await coffees.updateOne(filter, updateCoffee, options);
+            res.send(result)
+        })
+
+        app.delete('/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await coffees.deleteOne(query);
+            res.send(result)
+        })
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
