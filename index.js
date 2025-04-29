@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@cluster0.tlbypdj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -24,12 +24,22 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
+        // Get All
         app.get('/', async (req, res) => {
             const cursor = coffees.find({});
             const requiredCoffes = await cursor.toArray();
             res.send(requiredCoffes)
         })
 
+        // Get One
+        app.get('/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) };
+            const coffee = await coffees.findOne(query);
+            res.send(coffee)
+        })
+
+        // Post One
         app.post('/', async (req, res) => {
             const coffee = req.body;
             const result = await coffees.insertOne(coffee)
